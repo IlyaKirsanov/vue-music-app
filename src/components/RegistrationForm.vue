@@ -104,6 +104,7 @@
 </template>
 
 <script>
+import firebase from '@/includes/firebase';
 
 export default {
   name: 'RegistrationForm',
@@ -128,14 +129,30 @@ export default {
     };
   },
   methods: {
-    register() {
+    async register(values) {
       this.registrationShowAlert = true;
       this.registrationInSubmission = true;
       this.registrationAlertVariant = 'bg-blue-500';
       this.registrationAlertMessage = 'Please wait! Your account is being created';
+      let userCred = null;
+
+      try {
+        userCred = await firebase.auth()
+          .createUserWithEmailAndPassword(
+            values.email,
+            values.password,
+          );
+      } catch (error) {
+        this.registrationInSubmission = false;
+        this.registrationAlertVariant = 'bg-red-500';
+        this.registrationAlertMessage = `Error ${error.message}! Try again`;
+        return;
+      }
 
       this.registrationAlertVariant = 'bg-green-500';
       this.registrationAlertMessage = 'Success! Account created!';
+
+      console.log(userCred);
     },
   },
 };
