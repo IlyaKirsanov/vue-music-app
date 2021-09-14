@@ -25,13 +25,14 @@
 <script>
 
 import { mapMutations } from 'vuex';
+import { TOGGLE_AUTH_MODAL } from '@/state/actions';
 
 export default {
   name: 'AppHeader',
   methods: {
-    ...mapMutations(['toggleAuthModal']),
+    ...mapMutations([TOGGLE_AUTH_MODAL]),
     // toggleAuthModal() {
-    //   this.$store.commit('toggleAuthModal');
+    //   this.$state.commit('toggleAuthModal');
     // },
   },
 };

@@ -66,6 +66,7 @@ import { mapMutations } from 'vuex';
 import { mapMutations, mapState } from 'vuex';
 import RegistrationForm from './RegistrationForm.vue';
 import LoginForm from './LoginForm.vue';
+import { TOGGLE_AUTH_MODAL } from '@/state/actions';
 
 export default {
   name: 'AuthModel',
@@ -81,7 +82,7 @@ export default {
     }),
   },
   methods: {
-    ...mapMutations(['toggleAuthModal']),
+    ...mapMutations([TOGGLE_AUTH_MODAL]),
   },
 };
 </script>
