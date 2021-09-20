@@ -293,12 +293,16 @@
 <script>
 import AppHeader from '@/components/Header.vue';
 import AuthModel from '@/components/Auth.vue';
+import { INIT_LOGIN } from '@/state/actions';
 
 export default {
   name: 'App',
   components: {
     AppHeader,
     AuthModel,
+  },
+  created() {
+    this.$store.dispatch(INIT_LOGIN);
   },
 };
 </script>

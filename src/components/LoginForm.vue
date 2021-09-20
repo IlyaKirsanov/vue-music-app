@@ -41,6 +41,8 @@
 
 <script>
 
+import { LOGIN } from '@/state/actions';
+
 export default {
   name: 'LoginForm',
   data() {
@@ -56,15 +58,23 @@ export default {
     };
   },
   methods: {
-    login(values) {
+    async login(values) {
       this.loginInSubmission = true;
       this.loginShowAlert = true;
       this.loginAlertVariant = 'bg-white-500';
       this.loginAlertMessage = 'Please wait! We are logging you in';
 
+      try {
+        await this.$store.dispatch(LOGIN, values);
+      } catch (error) {
+        this.loginInSubmission = false;
+        this.loginAlertVariant = 'bg-red-500';
+        this.loginAlertMessage = 'Invalid login! Error!';
+      }
+
       this.loginAlertVariant = 'bg-green-500';
-      this.loginAlertMessage = 'Success! You are logged in';
-      console.log(values);
+      this.loginAlertMessage = 'Success logged in!';
+      window.location.reload();
     },
   },
 };
