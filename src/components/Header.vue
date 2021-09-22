@@ -34,7 +34,7 @@
               <a
                 class="px-2 text-white"
                 href="#"
-                @click.prevent="SIGNOUT"
+                @click.prevent="signout"
               >Logout</a>
             </li>
           </template>
@@ -46,7 +46,7 @@
 
 <script>
 
-import { mapActions, mapMutations, mapState } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 import { SIGNOUT, TOGGLE_AUTH_MODAL } from '@/state/actions';
 
 export default {
@@ -56,10 +56,16 @@ export default {
   },
   methods: {
     ...mapMutations([TOGGLE_AUTH_MODAL]),
-    ...mapActions([SIGNOUT]),
+    // ...mapActions([SIGNOUT]),
     // toggleAuthModal() {
     //   this.$state.commit('toggleAuthModal');
     // },
+    signout() {
+      this.$store.dispatch(SIGNOUT);
+      if (this.$route.meta.requiresAuth) {
+        this.$route.push({ name: 'nome' });
+      }
+    },
   },
 };
 </script>
