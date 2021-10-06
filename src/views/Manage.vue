@@ -2,7 +2,7 @@
   <!-- Main Content -->
   <section class="container mx-auto mt-6">
     <div class="md:grid md:grid-cols-3 md:gap-4">
-      <Upload/>
+      <Upload ref="upload"/>
       <div class="col-span-2">
         <div class="bg-white rounded border border-gray-200 relative flex flex-col">
           <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
@@ -28,14 +28,14 @@
                     <input type="text"
                            class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
                         transition duration-500 focus:outline-none focus:border-black rounded"
-                           placeholder="Enter Song Title"/>
+                           placeholder="Enter Song Title" />
                   </div>
                   <div class="mb-3">
                     <label class="inline-block mb-2">Genre</label>
                     <input type="text"
                            class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
                         transition duration-500 focus:outline-none focus:border-black rounded"
-                           placeholder="Enter Genre"/>
+                           placeholder="Enter Genre" />
                   </div>
                   <button type="submit" class="py-1.5 px-3 rounded text-white bg-green-600">
                     Submit
@@ -106,6 +106,10 @@ export default {
   name: 'Manage',
   components: {
     Upload,
+  },
+  beforeRouteLeave(to, from, next) {
+    this.$refs.upload.cancelUploads();
+    next();
   },
   // beforeRouteEnter(to, from, next) {
   //   if (store.state.userLoggedIn) {

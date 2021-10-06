@@ -22,7 +22,8 @@
         >
           <h5>Drop your files here</h5>
         </div>
-        <hr class="my-6"/>
+        <input type="file" multiple @change="upload($event)">
+        <hr class="my-6" />
         <!-- Progess Bars -->
         <div class="mb-4" v-for="file in uploads" :key="file.name">
           <!-- File Name -->
@@ -44,7 +45,7 @@
 </template>
 
 <script>
-import { storage } from '@/includes/firebase';
+import { auth, songsCollection, storage } from '@/includes/firebase';
 
 export default {
   name: 'Upload',
@@ -57,7 +58,7 @@ export default {
   methods: {
     upload($event) {
       this.isDragover = false;
-      const files = [...$event.dataTransfer.files];
+      const files = $event.dataTransfer ? [...$event.dataTransfer.files] : [...$event.target.files];
       files.forEach((file) => {
         if (file.type !== 'audio/mpeg') return;
 
@@ -82,11 +83,28 @@ export default {
           this.uploads[uploadIndex].icon = 'fas fa-times';
           this.uploads[uploadIndex].textClass = 'text-red-400';
         },
-        () => {
+        async () => {
+          const song = {
+            uid: auth.currentUser.uid,
+            displayName: auth.currentUser.displayName,
+            originalName: task.snapshot.ref.name,
+            modifiedName: task.snapshot.ref.name,
+            genre: '',
+            commentsCount: 0,
+          };
+
+          song.url = await task.snapshot.ref.getDownloadURL();
+          await songsCollection.add(song);
+
           this.uploads[uploadIndex].variants = 'bg-green-400';
           this.uploads[uploadIndex].icon = 'fas fa-check';
           this.uploads[uploadIndex].textClass = 'text-green-400';
         });
+      });
+    },
+    cancelUploads() {
+      this.uploads.forEach((upload) => {
+        upload.task.cancel();
       });
     },
   },
