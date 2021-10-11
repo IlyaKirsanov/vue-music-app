@@ -2,7 +2,9 @@
   <div class="border border-gray-200 p-3 mb-4 rounded">
     <div v-show="!showForm">
       <h4 class="inline-block text-2xl font-bold">{{ song.modifiedName }}</h4>
-      <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right">
+      <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right"
+              @click.prevent="deleteSong"
+      >
         <i class="fa fa-times"></i>
       </button>
       <button class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 float-right"
@@ -22,22 +24,26 @@
         :validation-schema="schema"
         :initial-value="song"
         @submit="edit"
-        >
+      >
         <div class="mb-3">
           <label class="inline-block mb-2">Song Title</label>
-          <VeeField name="modifiedName" type="text" v-model="modifiedName"
+          <VeeField name="modifiedName" type="text"
                     class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
                         transition duration-500 focus:outline-none focus:border-black rounded"
-                    placeholder="Enter Song Title" />
-          <ErrorMessage class="text-red-600" name="modifiedName" />
+                    placeholder="Enter Song Title"
+                    @input="updateUnsavedFlag(true)"
+          />
+          <ErrorMessage class="text-red-600" name="modifiedName"/>
         </div>
         <div class="mb-3">
           <label class="inline-block mb-2">Genre</label>
           <VeeField name="genre" type="text"
                     class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300
                         transition duration-500 focus:outline-none focus:border-black rounded"
-                    placeholder="Enter Genre" />
-          <ErrorMessage class="text-red-600" name="genre" />
+                    placeholder="Enter Genre"
+                    @input="updateUnsavedFlag(true)"
+          />
+          <ErrorMessage class="text-red-600" name="genre"/>
         </div>
         <button type="submit" class="py-1.5 px-3 rounded text-white bg-green-600"
                 :disabled="inSubmission"
@@ -57,7 +63,7 @@
 </template>
 
 <script>
-import { songsCollection } from '@/includes/firebase';
+import { songsCollection, storage } from '@/includes/firebase';
 
 export default {
   name: 'CompositionItem',
@@ -73,6 +79,13 @@ export default {
     index: {
       type: Number,
       required: true,
+    },
+    removeSong: {
+      type: Function,
+      required: true,
+    },
+    updateUnsavedFlag: {
+      type: Function,
     },
   },
   data() {
@@ -107,10 +120,21 @@ export default {
       }
 
       this.updateSong(this.index, values);
+      this.updateUnsavedFlag(false);
 
       this.inSubmission = false;
       this.alertVariant = 'bg-green-500';
       this.alertMessage = 'Success!';
+    },
+    async deleteSong() {
+      const storageRef = storage.ref();
+      const songRef = storageRef.child(`songs/${this.song.originalName}`);
+
+      await songRef.delete();
+
+      await songsCollection.doc(this.song.docId).delete();
+
+      this.removeSong(this.index);
     },
   },
 };
