@@ -2,8 +2,8 @@
   <!-- Introduction -->
   <section class="mb-8 py-20 text-white text-center relative">
     <div
-        class="absolute inset-0 w-full h-full bg-repeat bg-auto introduction-bg"
-        style="background-image: url(assets/img/header.png)"
+      class="absolute inset-0 w-full h-full bg-repeat bg-auto introduction-bg"
+      style="background-image: url(assets/img/header.png)"
     ></div>
     <div class="container mx-auto">
       <div class="text-white main-header-content">
@@ -17,8 +17,8 @@
     </div>
 
     <img
-        class="relative block mx-auto mt-5 -mb-20 w-auto max-w-full "
-        src="assets/img/introduction-music.png"
+      class="relative block mx-auto mt-5 -mb-20 w-auto max-w-full "
+      src="assets/img/introduction-music.png"
     />
   </section>
 
@@ -32,7 +32,7 @@
       </div>
       <!-- Playlist -->
       <ol id="playlist">
-        <app-song-item v-for="song in songs" :key="song.docId" :song="song"/>
+        <app-song-item v-for="song in songs" :key="song.docId" :song="song" />
       </ol>
       <!-- .. end Playlist -->
     </div>
@@ -52,13 +52,32 @@ export default {
     };
   },
   async created() {
-    const snapshots = await songsCollection.get();
-    snapshots.forEach((doc) => {
-      this.songs.push({
-        docId: doc.id,
-        ...doc.data(),
+    await this.getSongs();
+    window.addEventListener('scroll', this.handleScrolls);
+  },
+  beforeUnmount() {
+    window.removeEventListener('scroll', this.handleScrolls);
+  },
+  methods: {
+    handleScrolls() {
+      const { scrollTop, offsetHeight } = document.documentElement;
+      const { innerHeight } = window;
+      const isBottomOfWindow = (Math.round(scrollTop) + innerHeight) === offsetHeight;
+
+      if (isBottomOfWindow) {
+        console.log('BOTTOM OF WINDOW');
+      }
+    },
+    async getSongs() {
+      const snapshots = await songsCollection.get();
+
+      snapshots.forEach((doc) => {
+        this.songs.push({
+          docId: doc.id,
+          ...doc.data(),
+        });
       });
-    });
+    },
   },
 };
 </script>
