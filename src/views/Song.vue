@@ -29,15 +29,28 @@
         <i class="fa fa-comments float-right text-green-400 text-2xl"></i>
       </div>
       <div class="p-6">
-        <form>
-          <textarea
+        <div
+            class="text-white text-center font-bold p-4 mb-4"
+            v-if="commentShowAlert"
+            :class="commentAlertVariant"
+        >
+          {{ commentAlertMessage }}
+        </div>
+        <VeeForm :validation-schema="schema" @submit="addComment" v-if="userLoggedIn">
+          <VeeField
+              as="textarea" name="comment"
               class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition
               duration-500 focus:outline-none focus:border-black rounded mb-4"
-              placeholder="Your comment here..."></textarea>
-          <button type="submit" class="py-1.5 px-3 rounded text-white bg-green-600 block">
+              placeholder="Your comment here..."></VeeField>
+          <ErrorMessage class="text-red-600" name="comment" />
+          <button
+              type="submit"
+              class="py-1.5 px-3 rounded text-white bg-green-600 block"
+              :disabled="commentInSubmission"
+          >
             Submit
           </button>
-        </form>
+        </VeeForm>
         <!-- Sort Comments -->
         <select
             class="block mt-4 py-1.5 px-3 text-gray-800 border border-gray-300 transition
@@ -129,13 +142,24 @@
 
 <script>
 
-import { songsCollection } from '@/includes/firebase';
+import { mapState } from 'vuex';
+import { songsCollection, auth, commentsCollection } from '@/includes/firebase';
 
 export default {
   name: 'Song',
+  computed: {
+    ...mapState(['userLoggedIn']),
+  },
   data() {
     return {
       song: {},
+      schema: {
+        comment: 'required|min:3',
+      },
+      commentInSubmission: false,
+      commentShowAlert: false,
+      commentAlertVariant: 'bg-blue-500',
+      commentAlertMessage: 'Please wait! Your Comment is being submitted',
     };
   },
   async created() {
@@ -148,5 +172,29 @@ export default {
 
     this.song = docSnapshot.data();
   },
+  methods: {
+    async addComment(values, context) {
+      this.commentInSubmission = true;
+      this.commentShowAlert = true;
+      this.commentAlertVariant = 'bg-blue-500';
+      this.commentAlertMessage = 'Please wait! Your Comment is being submitted';
+
+      const comment = {
+        content: values.comment,
+        datePosted: new Date().toString(),
+        sid: this.$route.params.id,
+        name: auth.currentUser.displayName,
+        uid: auth.currentUser.uid,
+      };
+
+      await commentsCollection.add(comment);
+
+      this.commentInSubmission = false;
+      this.commentAlertVariant = 'bg-green-500';
+      this.commentAlertMessage = 'Comment added';
+      context.resetForm();
+    },
+  },
+
 };
 </script>
