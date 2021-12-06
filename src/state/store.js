@@ -9,7 +9,7 @@ import {
   UPDATE_POSITION,
 } from '@/state/actions';
 import { auth, usersCollection } from '@/includes/firebase';
-import { formatTime } from '@/includes/helper';
+import helper from '@/includes/helper';
 
 export default createStore({
   state: {
@@ -40,8 +40,8 @@ export default createStore({
       });
     },
     [UPDATE_POSITION]: (state) => {
-      state.seek = formatTime(state.sound.seek());
-      state.duration = formatTime(state.sound.duration());
+      state.seek = helper.formatTime(state.sound.seek());
+      state.duration = helper.formatTime(state.sound.duration());
     },
   },
 
