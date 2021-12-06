@@ -11,4 +11,5 @@ module.exports = {
       extensions: ['.js', '.vue', '.json'],
     },
   },
+  lintOnSave: false,
 };

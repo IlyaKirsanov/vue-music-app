@@ -5,8 +5,11 @@ import {
   INIT_LOGIN, LOGIN, REGISTER, SET_USER_DATA, SIGNOUT, TOGGLE_AUTH, TOGGLE_AUTH_MODAL,
   NEW_SONG,
   TOGGLE_AUDIO,
+  PROGRESS,
+  UPDATE_POSITION,
 } from '@/state/actions';
 import { auth, usersCollection } from '@/includes/firebase';
+import { formatTime } from '@/includes/helper';
 
 export default createStore({
   state: {
@@ -15,6 +18,8 @@ export default createStore({
     userData: null,
     currentSong: {},
     sound: {},
+    seek: '00:00',
+    duration: '00:00',
   },
 
   mutations: {
@@ -33,6 +38,10 @@ export default createStore({
         src: [payload.url],
         html5: true,
       });
+    },
+    [UPDATE_POSITION]: (state) => {
+      state.seek = formatTime(state.sound.seek());
+      state.duration = formatTime(state.sound.duration());
     },
   },
 
@@ -101,10 +110,25 @@ export default createStore({
       }
     },
 
-    async [NEW_SONG]({ commit, state }, payload) {
+    async [NEW_SONG]({ commit, state, dispatch }, payload) {
       commit(NEW_SONG, payload);
 
       state.sound.play();
+
+      state.sound.on('play', () => {
+        requestAnimationFrame(() => {
+          dispatch(PROGRESS);
+        });
+      });
+    },
+    [PROGRESS]({ commit, state, dispatch }) {
+      commit(UPDATE_POSITION);
+
+      if (state.sound.playing()) {
+        requestAnimationFrame(() => {
+          dispatch(PROGRESS);
+        });
+      }
     },
 
     async [TOGGLE_AUDIO]({ state }) {
