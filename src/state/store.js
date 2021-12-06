@@ -1,7 +1,9 @@
 import { createStore } from 'vuex';
 // eslint-disable-next-line import/named
+import { Howl } from 'howler';
 import {
   INIT_LOGIN, LOGIN, REGISTER, SET_USER_DATA, SIGNOUT, TOGGLE_AUTH, TOGGLE_AUTH_MODAL,
+  NEW_SONG,
 } from '@/state/actions';
 import { auth, usersCollection } from '@/includes/firebase';
 
@@ -10,6 +12,8 @@ export default createStore({
     authModalShow: false,
     userLoggedIn: false,
     userData: null,
+    currentSong: {},
+    sound: {},
   },
 
   mutations: {
@@ -21,6 +25,13 @@ export default createStore({
     },
     [SET_USER_DATA]: (state, data) => {
       state.userData = data;
+    },
+    [NEW_SONG]: (state, payload) => {
+      state.currentSong = payload;
+      state.sound = new Howl({
+        src: [payload.url],
+        html5: true,
+      });
     },
   },
 
@@ -80,6 +91,12 @@ export default createStore({
         });
         commit(TOGGLE_AUTH);
       }
+    },
+
+    async [NEW_SONG]({ commit, state }, payload) {
+      commit(NEW_SONG, payload);
+
+      state.sound.play();
     },
   },
   modules: {},

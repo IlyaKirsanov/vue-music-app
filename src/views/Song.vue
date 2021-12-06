@@ -8,6 +8,7 @@
     <div class="container flex items-center mx-auto">
       <!-- Play/Pause Button -->
       <button
+          @click.prevent="NEW_SONG(song)"
           type="button"
           class="z-50 w-24 h-24 text-3xl text-black bg-white rounded-full focus:outline-none">
         <i class="fas fa-play"></i>
@@ -81,9 +82,9 @@
 </template>
 
 <script>
-
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import { songsCollection, auth, commentsCollection } from '@/includes/firebase';
+import { NEW_SONG } from '@/state/actions';
 
 export default {
   name: 'Song',
@@ -129,6 +130,7 @@ export default {
     await this.getComments();
   },
   methods: {
+    ...mapActions([NEW_SONG]),
     async getComments() {
       const snapshots = await commentsCollection.where('sid', '==', this.$route.params.id).get();
 

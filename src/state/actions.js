@@ -5,3 +5,4 @@ export const INIT_LOGIN = 'INIT_LOGIN';
 export const LOGIN = 'LOGIN';
 export const SIGNOUT = 'SIGNOUT';
 export const SET_USER_DATA = 'SET_USER_DATA';
+export const NEW_SONG = 'NEW_SONG';
