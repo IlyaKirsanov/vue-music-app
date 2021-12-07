@@ -9,3 +9,4 @@ export const NEW_SONG = 'NEW_SONG';
 export const TOGGLE_AUDIO = 'TOGGLE_AUDIO';
 export const PROGRESS = 'PROGRESS';
 export const UPDATE_POSITION = 'UPDATE_POSITION';
+export const UPDATE_SEEK = 'UPDATE_SEEK';

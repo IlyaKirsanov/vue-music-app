@@ -7,6 +7,7 @@ import {
   TOGGLE_AUDIO,
   PROGRESS,
   UPDATE_POSITION,
+  UPDATE_SEEK,
 } from '@/state/actions';
 import { auth, usersCollection } from '@/includes/firebase';
 import helper from '@/includes/helper';
@@ -20,6 +21,7 @@ export default createStore({
     sound: {},
     seek: '00:00',
     duration: '00:00',
+    playerProgress: '0%',
   },
 
   mutations: {
@@ -42,6 +44,7 @@ export default createStore({
     [UPDATE_POSITION]: (state) => {
       state.seek = helper.formatTime(state.sound.seek());
       state.duration = helper.formatTime(state.sound.duration());
+      state.playerProgress = `${(state.sound.seek() / state.sound.duration()) * 100}%`;
     },
   },
 
@@ -111,6 +114,10 @@ export default createStore({
     },
 
     async [NEW_SONG]({ commit, state, dispatch }, payload) {
+      if (state.sound instanceof Howl) {
+        state.sound.unload();
+      }
+
       commit(NEW_SONG, payload);
 
       state.sound.play();
@@ -121,6 +128,7 @@ export default createStore({
         });
       });
     },
+
     [PROGRESS]({ commit, state, dispatch }) {
       commit(UPDATE_POSITION);
 
@@ -142,6 +150,27 @@ export default createStore({
         state.sound.play();
       }
     },
+
+    [UPDATE_SEEK]({ state, dispatch }, payload) {
+      if (!state.sound.playing) {
+        return;
+      }
+
+      console.log(payload)
+
+      const { x, width } = payload.currentTarget.getBoundingClientRect();
+
+      const clickX = payload.clientX - x;
+      const percentage = clickX / width;
+      const seconds = state.sound.duration() * percentage;
+
+      state.sound.seek(seconds);
+      console.log('S', seconds)
+
+      state.sound.once('seek', () => {
+        dispatch(PROGRESS)
+      })
+    }
   },
   modules: {},
 });
