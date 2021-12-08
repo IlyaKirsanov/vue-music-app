@@ -1,21 +1,31 @@
 <template>
   <li
-      class="flex justify-between items-center p-3 pl-6 cursor-pointer transition
-          duration-300 hover:bg-gray-50">
+    class="flex items-center justify-between p-3 pl-6 transition duration-300 cursor-pointer hover:bg-gray-50"
+  >
     <div>
       <router-link
-          :to="{ name:'song', params: { id: song.docId } }"
-          class="font-bold block text-gray-600">
+        :to="{ name:'song', params: { id: song.docId } }"
+        class="block font-bold text-gray-600"
+      >
         {{ song.modifiedName }}
       </router-link>
-      <span class="text-gray-500 text-sm">{{ song.name }}</span>
+      <span class="text-sm text-gray-500">{{ song.name }}</span>
     </div>
 
-    <div class="text-gray-600 text-lg">
-      <span class="comments">
-        <i class="fa fa-comments text-gray-600" />
-        {{ song.commentsCount }}
-      </span>
+    <div class="text-lg text-gray-600">
+      <router-link
+        custom
+        :to="{ name:'song', params: { id: song.docId }, hash: '#comments' }"
+        v-slot="{ navigate }"
+      >
+        <span
+          class="comments"
+          @click="navigate"
+        >
+          <i class="text-gray-600 fa fa-comments" />
+          {{ song.commentsCount }}
+        </span>
+      </router-link>
     </div>
   </li>
 </template>

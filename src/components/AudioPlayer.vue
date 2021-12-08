@@ -6,7 +6,10 @@
     <div class="relative">
       <!-- Play/Pause Button -->
       <div class="float-left leading-3 w-7 h-7">
-        <button type="button" @click.prevent="TOGGLE_AUDIO">
+        <button
+          type="button"
+          @click.prevent="TOGGLE_AUDIO"
+        >
           <i
             class="text-xl text-gray-500 fa"
             :class="{
@@ -61,17 +64,17 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from "vuex";
-import { TOGGLE_AUDIO, UPDATE_SEEK } from "@/state/actions";
+import { mapActions, mapGetters, mapState } from 'vuex';
+import { TOGGLE_AUDIO, UPDATE_SEEK } from '@/state/actions';
 
 export default {
-  name: "AudioPlayer",
+  name: 'AudioPlayer',
   methods: {
     ...mapActions([TOGGLE_AUDIO, UPDATE_SEEK]),
   },
   computed: {
-    ...mapGetters(["playing"]),
-    ...mapState(["seek", "duration", "playerProgress", "currentSong"]),
+    ...mapGetters(['playing']),
+    ...mapState(['seek', 'duration', 'playerProgress', 'currentSong']),
   },
 };
 </script>
